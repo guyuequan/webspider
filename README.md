@@ -30,3 +30,15 @@ dog's back.
 > This is the second paragraph in the blockquote.
 >
 > ## This is an H2 in a blockquote
+
+* test for
++ test for two
+- test for three
+
+*test for em*
+**test for strong**
+
+test for [ link ](http://www.baidu.com)
+
+
+test for image ![alt text](/path/to/img.jpg "Title")
