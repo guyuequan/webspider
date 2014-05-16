@@ -10,19 +10,19 @@ webspider
 
 
 
-
-
-A First Level Header
+使用说明
 ====================
-A Second Level Header
+配置解析规则器
 ---------------------
 
-Now is the time for all good men to come to
-the aid of their country. This is just a
-regular paragraph.
+具体可以查看website 里面的例子
+实现一个ParserRule的 接口：  class test implements ParserRule{}
+该接口会包含五个层次，即对应的每一个层次的输入：contentString，该层次的urlString
+下一个层级爬虫的输入为上一个层级爬虫的输出，依次类推
+你的爬虫有几个层次，则实现不同层次的解析规则
 
-The quick brown fox jumped over the lazy
-dog's back.
+主入口
+----------------------
 ### Header 3
 
 > This is a blockquote.
