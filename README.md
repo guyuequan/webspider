@@ -12,7 +12,7 @@ webspider
 
 使用说明
 ====================
-配置解析规则器
+1  配置解析规则器
 ---------------------
 
 具体可以查看website 里面的例子
@@ -21,15 +21,18 @@ webspider
 下一个层级爬虫的输入为上一个层级爬虫的输出，依次类推
 你的爬虫有几个层次，则实现不同层次的解析规则
 
-主入口
+2  调用
 ----------------------
-### Header 3
 
-> This is a blockquote.
-> 
-> This is the second paragraph in the blockquote.
->
-> ## This is an H2 in a blockquote
+具体参见  test.java下调用的例子
+
+3 扩展
+-----------------------
+为了便于扩展，还需要改进的一些功能
+
+> 1 现在的解析器是人为的进行添加,不够方便，以后做成直接输入xpath和正则，就能得到结果
+> 2 不支持分布式
+> 3 输出的格式现在限于文件，可以做成Monodb
 
 * test for
 + test for two
