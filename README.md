@@ -24,7 +24,13 @@ webspider
 2  调用
 ----------------------
 
-具体参见  test.java下调用的例子
+具体参见  test.java下调用的例子,如抓取 douban
+	 public static void douban(){
+		String enterUrl = "http://movie.douban.com/tag/%E6%97%A5%E6%9C%AC%E5%8A%A8%E7%94%BB";
+		Parserrule doubanComicRule = new doubanComic();
+		Spider mySpider = new Spider(enterUrl, "d:/douban.txt",doubanComicRule,3);
+		mySpider.process();
+	 }
 
 3 扩展
 -----------------------
