@@ -30,18 +30,7 @@ webspider
 -----------------------
 为了便于扩展，还需要改进的一些功能
 
-> 1 现在的解析器是人为的进行添加,不够方便，以后做成直接输入xpath和正则，就能得到结果
-> 2 不支持分布式
-> 3 输出的格式现在限于文件，可以做成Monodb
+> * 现在的解析器是人为的进行添加,不够方便，以后做成直接输入xpath和正则，就能得到结果
+> * 不支持分布式
+> * 输出的格式现在限于文件，可以做成Monodb
 
-* test for
-+ test for two
-- test for three
-
-*test for em*
-**test for strong**
-
-test for [ link ](http://www.baidu.com)
-
-
-test for image ![alt text](/path/to/img.jpg "Title")
