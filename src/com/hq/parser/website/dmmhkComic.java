@@ -15,13 +15,12 @@ public class dmmhkComic implements Parserrule{
 	@Override
 	public List<String> parser1(String contentString,String urlString) {
 		List<String> resultList = new ArrayList<String>();
-		//»ñÈ¡Ò³Êý
 	//	System.out.println(contentString);
 		Xpath xpath = new Xpath(contentString, "/html/body/div[@id='content']/div[@id='page']/ul/span[1]");
 		String pageString = xpath.getFilterHtmlResult();
 		
 		//int s = pageString.indexOf("Ò³");
-		int t = pageString.indexOf("Ò³");
+		int t = pageString.indexOf("é¡µ");
 		Integer pageCount =Integer.valueOf(pageString.substring(1, t));
 		resultList.add(urlString);
 		String tmpString = urlString.replaceAll(".html", "");
@@ -79,7 +78,7 @@ public class dmmhkComic implements Parserrule{
 		
 		//	"/html/body/div[@id='content'][1]/div[@class='fbox']/div[2]/div[@class='con_250']/img/@src"
 		
-		String title = new Xpath(contentString, titleXpath).getFilterHtmlResult().replace("\n", "").replace(" ","").replace("Íê½á", "");
+		String title = new Xpath(contentString, titleXpath).getFilterHtmlResult().replace("\n", "").replace(" ","").replace("å®Œç»“", "");
 		String state = new Xpath(contentString, stateXpath).getFilterHtmlResult().replace("\n", "").replace(" ","");
 		String category = new Xpath(contentString, categoryXpath).getFilterHtmlResult().replace("\n", "").replace(" ","");
 		String author = new Xpath(contentString, authorXpath).getFilterHtmlResult();
@@ -88,8 +87,8 @@ public class dmmhkComic implements Parserrule{
 		String description = "null" ;
 		String castString = "null";
 		if(detail!=null){
-			int t1 = detail.indexOf("ÄÚÈÝ½éÉÜ");
-			int t2 = detail.indexOf("ÈËÎï½éÉÜ");
+			int t1 = detail.indexOf("å†…å®¹ä»‹ç»");
+			int t2 = detail.indexOf("äººç‰©ä»‹ç»");
 			detail = detail.replaceAll("\n", " ").replaceAll(",", ";");
 			if(t1>0&&t2>0)
 				description = detail.substring(t1+5, t2-1);
@@ -99,7 +98,7 @@ public class dmmhkComic implements Parserrule{
 		String urlString3 = urlString2+"1]/a";
 		String playUrl = new Xpath(contentString, urlString3).getResult();
 		
-		//ÐáÌ½url
+		//ï¿½ï¿½Ì½url
 		String tmpPlayUrl=playUrl;
 		int i = 1;
 		while(tmpPlayUrl!=null){
@@ -117,12 +116,8 @@ public class dmmhkComic implements Parserrule{
 			m.find();
 			playUrl = baseUrl+m.group();
 		}
-		playUrl = playUrl.split("_")[0];
-		
-		
-		
-		String result = title+","+state+","+category+","+author+","+img+","+playUrl+",$.html#0-($-1),"+pageCount+","+description+","+castString;
-	
+		playUrl = playUrl.split("_")[0];		
+		String result = title+","+state+","+category+","+author+","+img+","+playUrl+",$.html#0-($-1),"+pageCount+","+description+","+castString;	
 		System.out.println(result);
 		System.out.println(urlString);
 		//System.out.println(img);

@@ -6,24 +6,24 @@ import java.util.List;
 import com.hq.spider.parser.Parserrule;
 
 /**
- * main spider,主入口
+ * main spider
  * @author huqian.hq
  * input :  enterurl + parserRuleMode + levels
  */
 public class Spider {
 		
 	
-	private  int levels;//层数
+	private  int levels;//max levels
 	
-	private String enterUrl  = null;//输入：入口rul
+	private String enterUrl  = null;//enter rul
 	
-	private List<String> enterList = null;//输入：入口url list
+	private List<String> enterList = null;//enter url list
 	
-	private Parserrule pRule ;//解析规则
+	private Parserrule pRule ;//parser rule
 	
-	List<String> resultList ;//输出结果
+	List<String> resultList ;//output result
 	
-	private String pathString;//输出结果地址
+	private String pathString;//output address
 	
 	//constructor
 	public Spider(String enterUrl,String pathString,Parserrule pRule,int levels) {
@@ -48,9 +48,9 @@ public class Spider {
 		//top level 
 		List<String> tmpList = new ArrayList<String>();
 		long startTime,endTime,wholeTime = 0;
-		startTime=System.currentTimeMillis();   //获取开始时间
+		startTime=System.currentTimeMillis();  
 		if(enterUrl !=null){
-			System.out.println("[------当前运行层:1--------]");
+			System.out.println("[------current level:1--------]");
 			Levelspider topLevelspider = new Levelspider(enterUrl, pRule,1,levels,pathString);
 			topLevelspider.run();
 			tmpList = topLevelspider.getResult();
@@ -59,23 +59,23 @@ public class Spider {
 			topLevelspider.run();
 			tmpList = topLevelspider.getResult();
 		}
-		endTime=System.currentTimeMillis(); //获取结束时间
+		endTime=System.currentTimeMillis(); 
 		wholeTime+= endTime-startTime;
-		System.out.println("[------第一层耗时:"+(endTime-startTime)+"ms---]");
+		System.out.println("[------level 1 cost:"+(endTime-startTime)+"ms---]");
 		//other levels
 		for (int i = 2; i <=levels; i++) {
-			startTime=System.currentTimeMillis();   //获取开始时间
-			System.out.println("[------当前运行层:"+i+"-------]");
+			startTime=System.currentTimeMillis();   
+			System.out.println("[------level:"+i+"-------]");
 			Levelspider tmpLevelspider = new Levelspider(tmpList, pRule,i,levels,pathString);
 			tmpLevelspider.run();
 			tmpList.clear();
 			tmpList = tmpLevelspider.getResult();
-			endTime=System.currentTimeMillis(); //获取结束时间
+			endTime=System.currentTimeMillis(); 
 			wholeTime+= endTime-startTime;
-			System.out.println("[------当前层 "+i+" 耗时:"+(endTime-startTime)+"ms---]");
+			System.out.println("[------level"+i+" cost:"+(endTime-startTime)+"ms---]");
 		}
 		resultList = tmpList;
-		System.out.println("【------总体爬虫结束，耗时:"+wholeTime/1000+"  s-----】");
+		System.out.println("[-----Spider over, cost:"+wholeTime/1000+"  s-----]");
 	}
 
 }

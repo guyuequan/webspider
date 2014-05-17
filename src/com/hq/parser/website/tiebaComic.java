@@ -9,7 +9,7 @@ import com.hq.spider.parser.Parserrule;
 import com.hq.spider.util.Xpath;
 
 /**
- * 抓取动漫周边信息： 作者、声优、主角
+ * spider: author cast actor
  * @author huqian.hq
  *
  */
@@ -17,20 +17,6 @@ public class tiebaComic implements Parserrule{
 
 	@Override
 	public List<String> parser1(String contentString, String urlString) {
-		// TODO Auto-generated method stub
-		List<String> result = new ArrayList<>();
-		String baseUrl = "http://tieba.baidu.com/f/fdir?fd=%B6%AF%C2%FE&sd=%B6%AF%C2%FE%D7%F7%D5%DF&pn=";//+page
-		int  pageCount =6;
-		for (int i = 1; i <=pageCount; i++) {
-			result.add(baseUrl+i);
-			System.out.println(baseUrl+i);
-		}
-		return result;
-		
-	}
-
-	@Override
-	public List<String> parser2(String contentString, String urlString) {
 		// TODO Auto-generated method stub
 		List<String> result = new ArrayList<>();
 		int odd = 1,even = 1;
@@ -53,6 +39,13 @@ public class tiebaComic implements Parserrule{
 		
 		}
 		return result;
+		
+	}
+
+	@Override
+	public List<String> parser2(String contentString, String urlString) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

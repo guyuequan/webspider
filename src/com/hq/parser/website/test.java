@@ -12,7 +12,7 @@ import com.hq.spider.parser.Parserrule;
 
 
 /**
- * 总体爬虫的测试
+ * test for spider
  * @author huqian.hq
  *
  */
@@ -20,7 +20,7 @@ public class test {
 	
 	 
 	 /**
-	 * 豆瓣爬虫，爬虫豆瓣动漫，入口url为："http://movie.douban.com/tag/%E6%97%A5%E6%9C%AC%E5%8A%A8%E7%94%BB"
+	 * douban spider,enter url:锟斤拷"http://movie.douban.com/tag/%E6%97%A5%E6%9C%AC%E5%8A%A8%E7%94%BB"
 	 */
 	 public static void douban(){
 		String enterUrl = "http://movie.douban.com/tag/%E6%97%A5%E6%9C%AC%E5%8A%A8%E7%94%BB";
@@ -29,7 +29,7 @@ public class test {
 		mySpider.process();
 	 }
 	 /**
-	  * 动漫迷爬虫，抓取动漫迷信息，入口为url list :http://dmm.hk/list/list_    从 1-24 页
+	  * dmm spider, enter url list :http://dmm.hk/list/list_    锟斤拷 1-24 页
 	  */
 	 public static void dmmhk(){ 
 		 List<String> urlList = new ArrayList<String>();
@@ -43,15 +43,15 @@ public class test {
 		mySpider.process();
 	 }
 	 /**
-	  * 贴吧爬虫 ： 抓取author cast 和 actor ，地址如下
+	  * tieba spider
 	  * @param varString
 	  * @param path
 	  */
-	 public static void tieba(String varString,String path){
+	 public static void tieba(String varString,int pages,String path){
 		 String baseUrl="";
 		 switch (varString) {
 		case "author":
-			baseUrl =  "http://tieba.baidu.com/f/fdir?fd=%B6%AF%C2%FE&sd=%B6%AF%C2%FE%D7%F7%D5%DF";//作者
+			baseUrl =  "http://tieba.baidu.com/f/fdir?fd=%B6%AF%C2%FE&sd=%B6%AF%C2%FE%D7%F7%D5%DF";//锟斤拷锟斤拷
 			break;
 		case "cast":
 			baseUrl = "http://tieba.baidu.com/f/fdir?fd=%B6%AF%C2%FE&sd=%B6%AF%C2%FE%C9%F9%D3%C5";
@@ -62,12 +62,22 @@ public class test {
 		default:
 			break;
 		}
+		 int  pageCount =pages;
+		 
+		 
+		List<String> urlList = new ArrayList<>();
+		baseUrl+="&pn=";//+page
+		for (int i = 1; i <=pageCount; i++) {
+			urlList.add(baseUrl+i);
+			System.out.println(baseUrl+i);
+		}
+		 
 		 Parserrule tiebaRule = new tiebaComic();
-		 Spider mySpider = new Spider(baseUrl, path,tiebaRule,2);
+		 Spider mySpider = new Spider(urlList, path,tiebaRule,1);
 		 mySpider.process();
 	 }
 	 
-	//main 函数入口
+	//main 
 	public static void main(String[] args) throws ClientProtocolException, IOException {
 			
 		//for douban
@@ -75,6 +85,7 @@ public class test {
 		//for dmm.hk
 		//dmmhk();
 		//for tieba
-		tieba("author","d:/author.csv");
+		//tieba("cast",3,"d:/cast.csv");
+		tieba("author",3,"d:/author.csv");
 	}
 }

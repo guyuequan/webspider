@@ -16,7 +16,7 @@ import com.hq.spider.util.Xpath;
 public class doubanComic implements Parserrule {
 		
 	
-//	private String url = "http://movie.douban.com/tag/%E6%97%A5%E6%9C%AC%E5%8A%A8%E6%BC%AB";// 入口
+//	private String url = "http://movie.douban.com/tag/%E6%97%A5%E6%9C%AC%E5%8A%A8%E6%BC%AB";// 
 	
 	@Override
 	public List<String> parser1(String contentString,String urlString) {
@@ -24,7 +24,7 @@ public class doubanComic implements Parserrule {
 		List<String>  resultList = new ArrayList<String>();
 		int offset = 20;
 		String url = "http://movie.douban.com/tag/%E6%97%A5%E6%9C%AC%E5%8A%A8%E7%94%BB?start=";
-		//获取页数
+		//get pages
 		int start = 51;
 		int end = 60;
 		for (int i = start; i <= end; i++) {			
@@ -69,7 +69,7 @@ public class doubanComic implements Parserrule {
 		detailNote = detailNote.replaceAll("\n", "|");
 		System.out.println(urlString);
 		//detailNote = detailNote.replaceAll("||", "$$");
-		resultList.add(urlString+"$$"+detailNote+"$$图片:"+smallImg+"$$"+"评分:"+commentString+"$$评分人数:"+commentNumString+"$$"+"简介:"+briefString);		
+		resultList.add(urlString+"$$"+detailNote+"$$img:"+smallImg+"$$"+"comment:"+commentString+"$$comment_num:"+commentNumString+"$$"+"brief:"+briefString);		
 		return resultList;
 	}
 

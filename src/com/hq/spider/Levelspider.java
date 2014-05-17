@@ -14,7 +14,6 @@ import com.hq.spider.util.Filehandle;
 import com.hq.spider.util.Spiderconfig;
 
 /**
- * 层次爬虫，输入url list 输出结果
  * per lever spider : input the urls and return the results  
  * @author huqian.hq
  * input :  url or urlList (String or List<String>)  
@@ -27,17 +26,17 @@ public class Levelspider implements Runnable{
 	private ConcurrentLinkedQueue<String> outputQueue = new ConcurrentLinkedQueue<String>();//输出队列
 	
 	
-	private Parserrule pRule; // 解析规则容器，包含所有层的
+	private Parserrule pRule; // parser rule : contain the whole levels
 	
-	private int currentLevel ; //当前层
+	private int currentLevel ; //current level
 	
-	private int maxLevel ; //最大层
+	private int maxLevel ; //max level
 		
-	private int threadCount = Spiderconfig.THREAD_COUNT;//抓取线程数
+	private int threadCount = Spiderconfig.THREAD_COUNT;//spider max thread 
 	
 	private Filehandle filehandle = null;
 	
-	private String pathString = null;//输出地址
+	private String pathString = null;//output address
 	
 	//constructor 1
 	public Levelspider(String urlString,Parserrule pRule,int currentLevel,int maxLevel,String pathString){

@@ -29,9 +29,9 @@ public class downloadThread implements Runnable{
 
 
 	public String urlString;
-	public int sleepTime =Spiderconfig.SLEEP_TIME; //重连时间
-	public int retryCount=Spiderconfig.RETRY_COUNT; //超时重连
-	private int currentLevel;//当前处理的层数	
+	public int sleepTime =Spiderconfig.SLEEP_TIME; //sleep time
+	public int retryCount=Spiderconfig.RETRY_COUNT; //retry connect count
+	private int currentLevel;//current level
 	private Parserrule pRule;
 	private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
 	
@@ -47,10 +47,10 @@ public class downloadThread implements Runnable{
 	}
 	/**
 	 * 
-	 * @param urlString  输入
-	 * @param outputQueue 输出
-	 * @param pRule  解析规则
-	 * @param currentLevel 当前层
+	 * @param urlString  
+	 * @param outputQueue 
+	 * @param pRule  
+	 * @param currentLevel 
 	 */
 	public downloadThread(String urlString,ConcurrentLinkedQueue<String> outputQueue,Parserrule pRule,int currentLevel){
 		this.urlString = urlString;
@@ -64,7 +64,7 @@ public class downloadThread implements Runnable{
 	}
 	
 	/**
-	 * 配置http请求头信息
+	 * config the headers 
 	 * @author huqian.hq
 	 **/	
 	public Map<String, String> getHeader(){	
@@ -84,7 +84,7 @@ public class downloadThread implements Runnable{
 	
 	
 	/**
-	 * 请求url 获取信息
+	 * request the single url ,and get the results
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
@@ -132,7 +132,7 @@ public class downloadThread implements Runnable{
 				getInfo();
 		} catch (Exception e) {
 			// TODO: handle exception
-			// 休息重连
+			// sleep and reconnect
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e1) {
