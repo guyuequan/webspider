@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import com.hq.spider.parser.Parserrule;
+import com.hq.spider.parser.ParserRule;
 import com.hq.spider.util.Xpath;
 
 /**
@@ -13,7 +13,7 @@ import com.hq.spider.util.Xpath;
  * @author huqian.hq
  *
  */
-public class doubanComic implements Parserrule {
+public class doubanComic implements ParserRule {
 		
 	
 //	private String url = "http://movie.douban.com/tag/%E6%97%A5%E6%9C%AC%E5%8A%A8%E6%BC%AB";// 

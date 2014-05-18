@@ -8,7 +8,7 @@ import org.apache.http.client.ClientProtocolException;
 
 
 import com.hq.spider.Spider;
-import com.hq.spider.parser.Parserrule;
+import com.hq.spider.parser.ParserRule;
 
 
 /**
@@ -24,7 +24,7 @@ public class test {
 	 */
 	 public static void douban(){
 		String enterUrl = "http://movie.douban.com/tag/%E6%97%A5%E6%9C%AC%E5%8A%A8%E7%94%BB";
-		Parserrule doubanComicRule = new doubanComic();
+		ParserRule doubanComicRule = new doubanComic();
 		Spider mySpider = new Spider(enterUrl, "d:/douban.txt",doubanComicRule,3);
 		mySpider.process();
 	 }
@@ -38,7 +38,7 @@ public class test {
 		 for (int i = 1; i <=end; i++) {
 			urlList.add(baseUrl+i+".html");
 		}
-		Parserrule dmmhkComicRule = new dmmhkComic();
+		ParserRule dmmhkComicRule = new dmmhkComic();
 		Spider mySpider = new Spider(urlList, "d:/dmmhkfinal1.csv",dmmhkComicRule,3);
 		mySpider.process();
 	 }
@@ -51,7 +51,7 @@ public class test {
 		 String baseUrl="";
 		 switch (varString) {
 		case "author":
-			baseUrl =  "http://tieba.baidu.com/f/fdir?fd=%B6%AF%C2%FE&sd=%B6%AF%C2%FE%D7%F7%D5%DF";//����
+			baseUrl =  "http://tieba.baidu.com/f/fdir?fd=%B6%AF%C2%FE&sd=%B6%AF%C2%FE%D7%F7%D5%DF";
 			break;
 		case "cast":
 			baseUrl = "http://tieba.baidu.com/f/fdir?fd=%B6%AF%C2%FE&sd=%B6%AF%C2%FE%C9%F9%D3%C5";
@@ -72,20 +72,35 @@ public class test {
 			System.out.println(baseUrl+i);
 		}
 		 
-		 Parserrule tiebaRule = new tiebaComic();
+		 ParserRule tiebaRule = new tiebaComic();
 		 Spider mySpider = new Spider(urlList, path,tiebaRule,1);
 		 mySpider.process();
 	 }
 	 
-	//main 
+	 /**
+	  * xunleikankan spider, url: http://movie.kankan.com/type,order,area/anime,update,12/
+	  */
+	 private static void xunleikankanComic() {
+		 List<String> urlList = new ArrayList<String>();
+		 String baseUrl = "http://movie.kankan.com/type,order,area/anime,update,12/page";
+		 int end = 62;
+		 for (int i=1; i<=end; i++) {
+			 urlList.add(baseUrl+i+"/");
+		 }
+		 ParserRule xunleikankanComicRule = new XunleikankanComicRules();
+		 Spider xunleikankanSpider = new Spider(urlList, "d:/spider/xunleikankan/xunleikankan.txt", xunleikankanComicRule, 2);
+		 xunleikankanSpider.process();
+	 }
+	
 	public static void main(String[] args) throws ClientProtocolException, IOException {
-			
+		//for xunleikankan
+		xunleikankanComic();
 		//for douban
 		//douban();
 		//for dmm.hk
 		//dmmhk();
 		//for tieba
 		//tieba("cast",3,"d:/cast.csv");
-		tieba("author",3,"d:/author.csv");
+		//tieba("author",3,"d:/author.csv");
 	}
 }

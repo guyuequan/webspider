@@ -9,9 +9,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.hq.spider.downloader.downloadThread;
-import com.hq.spider.parser.Parserrule;
+import com.hq.spider.parser.ParserRule;
 import com.hq.spider.util.Filehandle;
-import com.hq.spider.util.Spiderconfig;
+import com.hq.spider.util.SpiderConfig;
 
 /**
  * per lever spider : input the urls and return the results  
@@ -21,25 +21,25 @@ import com.hq.spider.util.Spiderconfig;
  */
 public class Levelspider implements Runnable{
 
-	private ConcurrentLinkedDeque<String> inputQueue = new ConcurrentLinkedDeque<String>();//输入队列
+	private ConcurrentLinkedDeque<String> inputQueue = new ConcurrentLinkedDeque<String>();
 	
-	private ConcurrentLinkedQueue<String> outputQueue = new ConcurrentLinkedQueue<String>();//输出队列
+	//contain the results of Parser, using the corresponding ParserRule.
+	private ConcurrentLinkedQueue<String> outputQueue = new ConcurrentLinkedQueue<String>();
 	
-	
-	private Parserrule pRule; // parser rule : contain the whole levels
+	private ParserRule pRule; // parser rule : contain the whole levels
 	
 	private int currentLevel ; //current level
 	
 	private int maxLevel ; //max level
 		
-	private int threadCount = Spiderconfig.THREAD_COUNT;//spider max thread 
+	private int threadCount = SpiderConfig.THREAD_COUNT;//spider max thread 
 	
 	private Filehandle filehandle = null;
 	
 	private String pathString = null;//output address
-	
+		
 	//constructor 1
-	public Levelspider(String urlString,Parserrule pRule,int currentLevel,int maxLevel,String pathString){
+	public Levelspider(String urlString,ParserRule pRule,int currentLevel,int maxLevel,String pathString){
 		inputQueue.push(urlString);
 		this.pRule = pRule;
 		this.currentLevel = currentLevel;
@@ -47,7 +47,7 @@ public class Levelspider implements Runnable{
 		this.pathString = pathString;
 	}
 	//constructor 2
-	public Levelspider(List<String>urlList,Parserrule pRule,int currentLevel,int maxLevel,String pathString){
+	public Levelspider(List<String>urlList,ParserRule pRule,int currentLevel,int maxLevel,String pathString){
 		for (String string : urlList) {
 			inputQueue.push(string);			
 		}

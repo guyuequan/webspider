@@ -3,7 +3,7 @@ package com.hq.spider;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hq.spider.parser.Parserrule;
+import com.hq.spider.parser.ParserRule;
 
 /**
  * main spider
@@ -19,14 +19,14 @@ public class Spider {
 	
 	private List<String> enterList = null;//enter url list
 	
-	private Parserrule pRule ;//parser rule
+	private ParserRule pRule ;//parser rule
 	
 	List<String> resultList ;//output result
 	
 	private String pathString;//output address
 	
 	//constructor
-	public Spider(String enterUrl,String pathString,Parserrule pRule,int levels) {
+	public Spider(String enterUrl,String pathString,ParserRule pRule,int levels) {
 		// TODO Auto-generated constructor stub
 		this.enterUrl = enterUrl;
 		this.levels = levels;
@@ -35,7 +35,7 @@ public class Spider {
 	}
 	
 	//constructor
-	public Spider(List<String>enterList,String pathString ,Parserrule pRule,int levels){
+	public Spider(List<String>enterList,String pathString ,ParserRule pRule,int levels){
 		this.enterList = enterList;
 		this.pathString = pathString;
 		this.levels = levels;

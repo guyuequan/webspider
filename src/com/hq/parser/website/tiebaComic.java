@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import com.hq.spider.parser.Parserrule;
+import com.hq.spider.parser.ParserRule;
 import com.hq.spider.util.Xpath;
 
 /**
@@ -13,7 +13,7 @@ import com.hq.spider.util.Xpath;
  * @author huqian.hq
  *
  */
-public class tiebaComic implements Parserrule{
+public class tiebaComic implements ParserRule{
 
 	@Override
 	public List<String> parser1(String contentString, String urlString) {

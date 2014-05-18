@@ -17,11 +17,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import com.hq.spider.parser.Parser;
-import com.hq.spider.parser.Parserrule;
-import com.hq.spider.util.Spiderconfig;
+import com.hq.spider.parser.ParserRule;
+import com.hq.spider.util.SpiderConfig;
+import com.hq.spider.util.Xpath;
 
 /**
- * 爬虫下载线程，封装
  * @author huqian.hq
  *
  */
@@ -29,16 +29,20 @@ public class downloadThread implements Runnable{
 
 
 	public String urlString;
-	public int sleepTime =Spiderconfig.SLEEP_TIME; //sleep time
-	public int retryCount=Spiderconfig.RETRY_COUNT; //retry connect count
+	public int sleepTime =SpiderConfig.SLEEP_TIME; //sleep time
+	public int retryCount=SpiderConfig.RETRY_COUNT; //retry connect count
 	private int currentLevel;//current level
-	private Parserrule pRule;
+	private ParserRule pRule;
+	private String inputString ="";
 	private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
 	
 	//constructor1
-	public downloadThread(String urlString,int sleepTime,int retryCount,ConcurrentLinkedQueue<String> queue,Parserrule pRule,int currentLevel) {
-		// TODO Auto-generated constructor stub
-		this.urlString = urlString;
+	public downloadThread(String inputString,int sleepTime,int retryCount,ConcurrentLinkedQueue<String> queue,ParserRule pRule,int currentLevel) {
+		if(inputString.indexOf(SpiderConfig.SPLIT_STRING)>0)
+			this.urlString = inputString.split(SpiderConfig.SPLIT_STRING)[0];
+		else
+			this.urlString = inputString;
+		this.inputString = inputString;
 		this.sleepTime = sleepTime;
 		this.retryCount = retryCount;
 		this.queue = queue;
@@ -47,20 +51,21 @@ public class downloadThread implements Runnable{
 	}
 	/**
 	 * 
-	 * @param urlString  
+	 * @param inputString  
 	 * @param outputQueue 
 	 * @param pRule  
 	 * @param currentLevel 
 	 */
-	public downloadThread(String urlString,ConcurrentLinkedQueue<String> outputQueue,Parserrule pRule,int currentLevel){
-		this.urlString = urlString;
+	public downloadThread(String inputString,ConcurrentLinkedQueue<String> outputQueue,ParserRule pRule,int currentLevel){
+		if(inputString.indexOf(SpiderConfig.SPLIT_STRING)>0){
+			this.urlString = inputString.split(SpiderConfig.SPLIT_STRING)[0];
+		}
+		else
+			this.urlString = inputString;
+		this.inputString = inputString;
 		this.queue = outputQueue;
 		this.pRule = pRule;
 		this.currentLevel = currentLevel;
-	}
-	
-	public String getUrl(){
-		return this.urlString;
 	}
 	
 	/**
@@ -75,7 +80,7 @@ public class downloadThread implements Runnable{
 		mp.put("Cache-Control","max-age=0");
 		mp.put("Connection","keep-alive");
 		String tmp[] = urlString.split("/");
-		mp.put("Host",tmp[2]);		
+		mp.put("Host",tmp[2]);
 		String cookieString = "	__utma=; __utmz=; bid=\"Nj9abmZQo/g\"; ll=\"108296\"; __utma=30149280.1550421253.1398653447.1398680034.1399786189.3; __utmz=30149280.1398653447.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utma=223695111.1872449541.1398653484.1398680034.1399786189.3; __utmz=223695111.1398653484.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmb=30149280.2.10.1399786189; __utmc=30149280; __utmb=223695111.0.10.1399786189; __utmc=223695111";
 		mp.put("Cookie",cookieString);
 		mp.put("User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0");
@@ -91,7 +96,7 @@ public class downloadThread implements Runnable{
 	public void getInfo() throws ClientProtocolException, IOException{
 		// http get request
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpGet = new HttpGet(urlString);
+		HttpGet httpGet = new HttpGet(this.urlString);
 		Map<String, String> headers = getHeader();
 		for (String key : headers.keySet()) {
 		    String value = headers.get(key);
@@ -102,19 +107,14 @@ public class downloadThread implements Runnable{
 		try {
 		    int code = getResponse.getStatusLine().getStatusCode();
 		    if (code == 200) {
-		    	 HttpEntity entity1 = getResponse.getEntity();
-		    	 
-		    	  Charset tt = ContentType.getOrDefault(entity1).getCharset();
-		    	  String charsetString;
-		    	 if(tt==null)
-		    		 charsetString = "gbk";
-		    	 else {
-		    		 charsetString = tt.toString();
+		    	HttpEntity entity1 = getResponse.getEntity();
+		    	String contentString = EntityUtils.toString(entity1);
+		    	String charsetString = getCharset(contentString);
+		   		String newString = new String(contentString.getBytes("iso8859-1"),charsetString);
+				List<String> reusltList= (List<String>) new Parser(newString, pRule, currentLevel, inputString).process();
+				for (String string : reusltList) {
+					queue.add(string);
 				}
-				    List<String> reusltList= (List<String>) new Parser(EntityUtils.toString(entity1,charsetString), pRule, currentLevel, urlString).process();
-						 for (String string : reusltList) {
-								 queue.add(string);
-						 } 
 				
 			}else {
 				System.err.println(urlString+" "+getResponse.getStatusLine());
@@ -125,6 +125,21 @@ public class downloadThread implements Runnable{
 		}
 	}
 	
+	private String getCharset(String contentString) {
+	   	 int t1 = contentString.indexOf("charset=");
+	   	 int k = t1;
+	   	 
+	   	 while((contentString.charAt(k)!='"'&&contentString.charAt(k)!=';'&&contentString.charAt(k)!=' ')&&k<=contentString.length())
+	   		 k++;
+	   	 
+	   	 String charsetString = "";
+	   	 if (k>t1&&t1>0)
+	   		 charsetString = contentString.substring(t1+8,k);
+	   	 if (charsetString.equals("gb2312")){
+	   		 charsetString = "gbk";
+	   	 }
+		return charsetString;
+	}
 	@Override
 	public void run() {		
 		// TODO Auto-generated method stub

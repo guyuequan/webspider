@@ -7,10 +7,10 @@ import java.util.regex.Matcher;
 import javax.naming.spi.DirStateFactory.Result;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.RestoreAction;
 
-import com.hq.spider.parser.Parserrule;
+import com.hq.spider.parser.ParserRule;
 import com.hq.spider.util.Xpath;
 
-public class dmmhkComic implements Parserrule{
+public class dmmhkComic implements ParserRule{
 
 	@Override
 	public List<String> parser1(String contentString,String urlString) {

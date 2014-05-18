@@ -1,42 +1,46 @@
 package com.hq.spider.parser;
 
-
+import com.hq.spider.util.SpiderConfig;
 
 public class Parser {
 	
 	private int currentLevel;
 	
-	private Parserrule pRule;
+	private ParserRule pRule;
 	
 	private String contentString;
 	
-	private String urlString;
+	private String inputString;
 	
-	public Parser(String contentString,Parserrule pRule,int currentLevel,String urlString) {
-		
-		// TODO Auto-generated constructor stub
+	/**
+	 * 
+	 * @param contentString The target(HTML page) that should be parsed with Xpath.
+	 * @param pRule The specific {@link ParserRule} for the target(HTML page).
+	 * @param currentLevel
+	 * @param inputString The result of previous parser-method. Consists of all the data which will be written into the final file. Split by {@link SpiderConfig.SPLIT_STRING}
+	 */
+	public Parser(String contentString,ParserRule pRule,int currentLevel,String inputString) {
 		this.currentLevel = currentLevel;
 		this.pRule = pRule;
 		this.contentString = contentString;
-		this.urlString = urlString;
-		
+		this.inputString = inputString;
 	}
 	
 	public java.util.List<String> process(){
 		
 		switch (currentLevel) {
-		case 1:
-			return pRule.parser1(contentString,urlString);
-		case 2:
-			return pRule.parser2(contentString,urlString);
-		case 3:
-			return pRule.parser3(contentString,urlString);
-		case 4:
-			return pRule.parser4(contentString,urlString);
-		case 5:
-			return pRule.parser5(contentString,urlString);
-		default:
-			return null;
+			case 1:
+				return pRule.parser1(contentString,inputString);
+			case 2:
+				return pRule.parser2(contentString,inputString);
+			case 3:
+				return pRule.parser3(contentString,inputString);
+			case 4:
+				return pRule.parser4(contentString,inputString);
+			case 5:
+				return pRule.parser5(contentString,inputString);
+			default:
+				return null;
 		}
 
 	}
