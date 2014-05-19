@@ -18,13 +18,13 @@ import com.hq.spider.util.Xpath;
  * @author andone.lsl
  *
  */
-public class XunleikankanComicRules implements ParserRule{
+public class XunleikankanComicRule implements ParserRule{
 
 	@Override
 	public List<String> parser1(String contentString, String inputString) {
 		List<String>  resultList = new ArrayList<String>();
 		int itemsNum = 30;
-		if(contentString.endsWith("page62/")) itemsNum = 17;
+		if(inputString.endsWith("page62/")) itemsNum = 17;
 		for (int i=1; i<=itemsNum; i++) {
 			String imgURLXpath = "//body//ul/li[" + i + "]/a/img/@_src";
 			String detailXpath = "//body//ul/li[" + i + "]/a/@href";

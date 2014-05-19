@@ -87,19 +87,27 @@ public class test {
 		 for (int i=1; i<=end; i++) {
 			 urlList.add(baseUrl+i+"/");
 		 }
-		 ParserRule xunleikankanComicRule = new XunleikankanComicRules();
+		 ParserRule xunleikankanComicRule = new XunleikankanComicRule();
 		 Spider xunleikankanSpider = new Spider(urlList, "d:/spider/xunleikankan/xunleikankan.txt", xunleikankanComicRule, 2);
 		 xunleikankanSpider.process();
 	 }
+	 
+	private static void tengXunShiPinComic() {
+		List<String> urlList = new ArrayList<String>();
+		String baseUrl = "http://v.qq.com/cartlist/";
+		for (int i=0; i<=60; i++) {
+			urlList.add(baseUrl + (i%10) + "/3_-1_1_-1_-1_0_" + i + "_1_10.html");
+		}
+		ParserRule tengXunShiPinComicRule = new TengXunShiPinComicRule();
+		Spider xunleikankanSpider = new Spider(urlList, "d:/spider/tengxunshipin/tengxunshipin.txt", tengXunShiPinComicRule, 2);
+		xunleikankanSpider.process();
+	}
 	
 	public static void main(String[] args) throws ClientProtocolException, IOException {
-		//for xunleikankan
-		xunleikankanComic();
-		//for douban
+		tengXunShiPinComic();
+		//xunleikankanComic();
 		//douban();
-		//for dmm.hk
 		//dmmhk();
-		//for tieba
 		//tieba("cast",3,"d:/cast.csv");
 		//tieba("author",3,"d:/author.csv");
 	}
