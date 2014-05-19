@@ -103,8 +103,13 @@ public class test {
 		xunleikankanSpider.process();
 	}
 	
+	private static void bilibiliComic() {
+		
+	}
+
 	public static void main(String[] args) throws ClientProtocolException, IOException {
-		tengXunShiPinComic();
+		bilibiliComic();
+		//tengXunShiPinComic();
 		//xunleikankanComic();
 		//douban();
 		//dmmhk();
