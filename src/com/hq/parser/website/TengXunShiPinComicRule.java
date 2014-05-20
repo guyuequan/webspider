@@ -3,6 +3,7 @@ package com.hq.parser.website;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,26 +54,39 @@ public class TengXunShiPinComicRule implements ParserRule {
 			description = allDescription.substring(storyStartIndex, storyEndIndex).replaceAll("<br />", "\n").replaceAll("\"", " ").replaceAll("'", " ").replaceAll("“", " ").replaceAll("”", " ").trim();
 		}
 		
-		String cast = null;
+		String castString = null;
+		JSONArray castJA = new JSONArray();
 		if (allDescription != null && allDescription.contains("★【CAST】")) {
 			int castStartIndex = allDescription.indexOf("★【CAST】") + new String("★【CAST】").length();
 			int castEndIndex = allDescription.length();
-			cast = allDescription.substring(castStartIndex, castEndIndex).replace("<br />", "\n").replaceAll(" </span>", "").replaceAll("・", ".").replaceAll("·", ".").trim();
+			castString = allDescription.substring(castStartIndex, castEndIndex).replace("<br />", "\n").replaceAll(" </span>", "").replaceAll("・", ".").replaceAll("·", ".").trim();
+			String[] strings = castString.split("\n");
+			for(String str : strings){
+				castJA.put(str);
+			}
+			
 		}
 		
 		String playUrl = inputString.split(SpiderConfig.SPLIT_STRING)[0];
+		JSONArray playUrlJSONArray = new JSONArray();
+		playUrlJSONArray.put(playUrl);
+		
+		JSONArray imgUrlJSONArray = new JSONArray();
+		imgUrlJSONArray.put(imgUrl);
+		
 		String director = inputString.split(SpiderConfig.SPLIT_STRING)[1];
 		
 		JSONObject jsonObj = new JSONObject();
 		try {
-			jsonObj.put("play", playUrl);
+			jsonObj.put("play_url", playUrlJSONArray);
+			jsonObj.put("play_source", "腾讯视频");
 			jsonObj.put("director", director);
 			jsonObj.put("title", title);
-			jsonObj.put("img", imgUrl);
-			jsonObj.put("currentState", currentState);
+			jsonObj.put("img_url", imgUrlJSONArray);
+			jsonObj.put("play_count", currentState);
 			jsonObj.put("play_num", totalState);
 			jsonObj.put("description", description);
-			jsonObj.put("cast", cast);
+			jsonObj.put("cast", castJA);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

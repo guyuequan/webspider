@@ -81,11 +81,17 @@ public class XunleikankanComicRule implements ParserRule{
 		description = description.replace("[查看详情]", "");
 		
 		String[] strings = inputString.split(SpiderConfig.SPLIT_STRING);
+		JSONArray playJA = new JSONArray();
+		playJA.put(strings[0]);
+		JSONArray imgJA = new JSONArray();
+		imgJA.put(strings[2]);
+		
 		JSONObject jsonObj = new JSONObject();
 		try {
-			jsonObj.put("play", strings[0]);
+			jsonObj.put("play_url", playJA);
+			jsonObj.put("play_source", "迅雷看看");
 			jsonObj.put("title", strings[1]);
-			jsonObj.put("img", strings[2]);
+			jsonObj.put("img_url", imgJA);
 			jsonObj.put("author", author);
 			jsonObj.put("cast", castJSONArray);
 			jsonObj.put("category", categoryJSONArray);
