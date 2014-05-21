@@ -49,8 +49,8 @@ public class Spider {
 		List<String> tmpList = new ArrayList<String>();
 		long startTime,endTime,wholeTime = 0;
 		startTime=System.currentTimeMillis();  
+		System.out.println("[------current level:1--------]");
 		if(enterUrl !=null){
-			System.out.println("[------current level:1--------]");
 			Levelspider topLevelspider = new Levelspider(enterUrl, pRule,1,levels,pathString);
 			topLevelspider.run();
 			tmpList = topLevelspider.getResult();

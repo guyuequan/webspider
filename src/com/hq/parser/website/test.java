@@ -78,7 +78,7 @@ public class test {
 	 }
 	 
 	 /**
-	  * xunleikankan spider, url: http://movie.kankan.com/type,order,area/anime,update,12/
+	  * 迅雷看看, url: http://movie.kankan.com/type,order,area/anime,update,12/
 	  */
 	 private static void xunleikankanComic() {
 		 List<String> urlList = new ArrayList<String>();
@@ -92,6 +92,9 @@ public class test {
 		 xunleikankanSpider.process();
 	 }
 	 
+	/**
+	 * 腾讯视频
+	 */
 	private static void tengXunShiPinComic() {
 		List<String> urlList = new ArrayList<String>();
 		String baseUrl = "http://v.qq.com/cartlist/";
@@ -103,12 +106,25 @@ public class test {
 		xunleikankanSpider.process();
 	}
 	
-	private static void bilibiliComic() {
-		
+	/**
+	 * 不卡的动画
+	 * http://www.bukade.com/board/cartoon/jp/index.html
+	 */
+	private static void bukade() {
+		List<String> urlList = new ArrayList<String>();
+		urlList.add("http://www.bukade.com/board/cartoon/jp/index.html");
+		String baseUrl = "http://www.bukade.com/board/cartoon/jp/list_";
+		int totalPageNum = 314;
+		for(int i=2; i<=totalPageNum; i++){
+			urlList.add(baseUrl + i + ".html");
+		}
+		ParserRule bukadeComicRule = new BukadeComicRule();
+		Spider bukadeSpider = new Spider(urlList, "d:/spider/bukade/bukade.txt", bukadeComicRule, 2);
+		bukadeSpider.process();
 	}
 
 	public static void main(String[] args) throws ClientProtocolException, IOException {
-		bilibiliComic();
+		bukade();
 		//tengXunShiPinComic();
 		//xunleikankanComic();
 		//douban();
