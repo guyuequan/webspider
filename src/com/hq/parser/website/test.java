@@ -123,10 +123,37 @@ public class test {
 		bukadeSpider.process();
 	}
 
+	/**
+	 * http://www.tudou.com/list/ach4a-2b120c-2d-2e-2f-2g-2h-2i-2j-2k-2l-2m-2n-2sort2cla-2hot-2.html
+	 */
+	private static void tudou() {
+		String url = "http://www.tudou.com/list/ach4a-2b120c-2d-2e-2f-2g-2h-2i-2j-2k-2l-2m-2n-2sort2cla-2hot-2.html";
+		ParserRule bukadeComicRule = new BukadeComicRule();
+		Spider bukadeSpider = new Spider(url, "d:/spider/tudou/tudou.txt", bukadeComicRule, 2);
+		bukadeSpider.process();
+	}
+	
+	/**
+	 * http://www.youku.com/v_olist/c_100_g__a_%E6%97%A5%E6%9C%AC_sg__mt__lg__q__s_1_r__u_0_pt_0_av_0_ag_0_sg__pr__h__d_1_p_1.html
+	 */
+	private static void youku() {
+		List<String> urlList = new ArrayList<String>();
+		String baseUrl = "http://www.youku.com/v_olist/c_100_g__a_%E6%97%A5%E6%9C%AC_sg__mt__lg__q__s_1_r__u_0_pt_0_av_0_ag_0_sg__pr__h__d_1_p_";
+		int totalPageNum = 29;
+		for(int i=1; i<=totalPageNum; i++){
+			urlList.add(baseUrl + i + ".html");
+		}
+		ParserRule youkuParserRule = new YoukuComicRule();
+		Spider youkuSpider = new Spider(urlList, "d:/spider/youku/youku.txt", youkuParserRule, 2);
+		youkuSpider.process();
+	}
+	
 	public static void main(String[] args) throws ClientProtocolException, IOException {
-		bukade();
-		//tengXunShiPinComic();
-		//xunleikankanComic();
+		//youku();// download类中不需要转码
+//		tudou(); //未完成
+		//bukade();
+		//tengXunShiPinComic();// download类中需要转码
+		//xunleikankanComic();// download类中需要转码
 		//douban();
 		//dmmhk();
 		//tieba("cast",3,"d:/cast.csv");

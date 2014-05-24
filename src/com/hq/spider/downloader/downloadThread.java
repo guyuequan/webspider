@@ -110,7 +110,12 @@ public class downloadThread implements Runnable{
 		    	HttpEntity entity1 = getResponse.getEntity();
 		    	String contentString = EntityUtils.toString(entity1);
 		    	String charsetString = getCharset(contentString);
-		   		String newString = new String(contentString.getBytes("iso8859-1"),charsetString);
+		   		String newString;
+//		   		if (charsetString.equalsIgnoreCase("utf-8"))
+//		   			newString = new String(contentString.getBytes(), charsetString);
+//		   		else
+		   			//有些uft-8的网站不需要转码，有些需要。。。（例如迅雷看看和腾讯就需要才对）
+		   			newString = new String(contentString.getBytes("iso8859-1"),charsetString);
 				List<String> reusltList= (List<String>) new Parser(newString, pRule, currentLevel, inputString).process();
 				for (String string : reusltList) {
 					queue.add(string);

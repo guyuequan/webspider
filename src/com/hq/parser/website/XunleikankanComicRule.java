@@ -33,10 +33,10 @@ public class XunleikankanComicRule implements ParserRule{
 			String imgURL = new Xpath(contentString, imgURLXpath).getResult();
 			String detailUrl = new Xpath(contentString, detailXpath).getResult();
 			String title = new Xpath(contentString,titleXpath).getResult();
-			
 			String result = detailUrl + SpiderConfig.SPLIT_STRING + 
 							title + SpiderConfig.SPLIT_STRING + 
 							imgURL;
+//			System.out.println(title);
 			resultList.add(result);			
 		}
 		
@@ -86,10 +86,13 @@ public class XunleikankanComicRule implements ParserRule{
 		JSONArray imgJA = new JSONArray();
 		imgJA.put(strings[2]);
 		
+		JSONArray play_source = new JSONArray();
+		play_source.put("迅雷看看");
+		
 		JSONObject jsonObj = new JSONObject();
 		try {
 			jsonObj.put("play_url", playJA);
-			jsonObj.put("play_source", "迅雷看看");
+			jsonObj.put("play_source", play_source);
 			jsonObj.put("title", strings[1]);
 			jsonObj.put("img_url", imgJA);
 			jsonObj.put("author", author);

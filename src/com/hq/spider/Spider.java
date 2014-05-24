@@ -65,7 +65,7 @@ public class Spider {
 		//other levels
 		for (int i = 2; i <=levels; i++) {
 			startTime=System.currentTimeMillis();   
-			System.out.println("[------level:"+i+"-------]");
+			System.out.println("[------current level:"+i+"-------]");
 			Levelspider tmpLevelspider = new Levelspider(tmpList, pRule,i,levels,pathString);
 			tmpLevelspider.run();
 			tmpList.clear();

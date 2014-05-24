@@ -76,10 +76,13 @@ public class TengXunShiPinComicRule implements ParserRule {
 		
 		String director = inputString.split(SpiderConfig.SPLIT_STRING)[1];
 		
+		JSONArray play_source = new JSONArray();
+		play_source.put("腾讯视频");
+		
 		JSONObject jsonObj = new JSONObject();
 		try {
 			jsonObj.put("play_url", playUrlJSONArray);
-			jsonObj.put("play_source", "腾讯视频");
+			jsonObj.put("play_source", play_source);
 			jsonObj.put("director", director);
 			jsonObj.put("title", title);
 			jsonObj.put("img_url", imgUrlJSONArray);
