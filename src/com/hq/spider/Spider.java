@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hq.spider.parser.ParserRule;
+import com.hq.spider.util.SpiderConfig;
 
 /**
  * main spider
@@ -44,6 +45,9 @@ public class Spider {
 	
 	
 	public  void process(){
+		
+		//初始化cookie sleeptime 等全局变量
+		SpiderConfig.init();
 		
 		//top level 
 		List<String> tmpList = new ArrayList<String>();

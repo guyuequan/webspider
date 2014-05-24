@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.http.HttpEntity;
@@ -15,6 +16,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
+import sun.awt.CharsetString;
 
 import com.hq.spider.parser.Parser;
 import com.hq.spider.parser.ParserRule;
@@ -95,33 +98,52 @@ public class downloadThread implements Runnable{
 	 */
 	public void getInfo() throws ClientProtocolException, IOException{
 		// http get request
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpGet = new HttpGet(this.urlString);
-		Map<String, String> headers = getHeader();
-		for (String key : headers.keySet()) {
-		    String value = headers.get(key);
-		    httpGet.addHeader(key, value);		
-		}
-		CloseableHttpResponse getResponse = httpclient.execute(httpGet);
+		String flag = "weibo";
+		
+		if(flag == "weibo"){
+			///for weibo
+			Random random = new Random();
 
-		try {
-		    int code = getResponse.getStatusLine().getStatusCode();
-		    if (code == 200) {
-		    	HttpEntity entity1 = getResponse.getEntity();
-		    	String contentString = EntityUtils.toString(entity1);
-		    	String charsetString = getCharset(contentString);
-		   		String newString = new String(contentString.getBytes("iso8859-1"),charsetString);
-				List<String> reusltList= (List<String>) new Parser(newString, pRule, currentLevel, inputString).process();
-				for (String string : reusltList) {
-					queue.add(string);
-				}
-				
-			}else {
-				System.err.println(urlString+" "+getResponse.getStatusLine());
+			int rankCookiePos = random.nextInt(SpiderConfig.cookieList.size());
+			String contentString = SpiderConfig.getWeibo(urlString,SpiderConfig.cookieList.get(rankCookiePos));
+			System.out.println(SpiderConfig.cookieList.get(rankCookiePos));
+		//	String charsetString = getCharset(contentString);
+			String charsetString = "utf-8";
+			//String newString = new String(contentString.getBytes("iso8859-1"),charsetString);
+			List<String> reusltList= (List<String>) new Parser(contentString, pRule, currentLevel, inputString).process();
+			for (String string : reusltList) {
+				queue.add(string);
 			}
-		   
-		} finally {
-		    getResponse.close();
+		}else{
+			/// other websites
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			HttpGet httpGet = new HttpGet(this.urlString);
+			Map<String, String> headers = getHeader();
+			for (String key : headers.keySet()) {
+			    String value = headers.get(key);
+			    httpGet.addHeader(key, value);		
+			}
+			CloseableHttpResponse getResponse = httpclient.execute(httpGet);
+	
+			try {
+			    int code = getResponse.getStatusLine().getStatusCode();
+			    if (code == 200) {
+			    	HttpEntity entity1 = getResponse.getEntity();
+			    	String contentString = EntityUtils.toString(entity1);
+			    	String charsetString = getCharset(contentString);
+			   		String newString = new String(contentString.getBytes("iso8859-1"),charsetString);
+					List<String> reusltList= (List<String>) new Parser(newString, pRule, currentLevel, inputString).process();
+					for (String string : reusltList) {
+						queue.add(string);
+					}
+					
+				}else {
+					System.err.println(urlString+" "+getResponse.getStatusLine());
+				}
+			   
+			} finally {
+			    getResponse.close();
+			}
 		}
 	}
 	

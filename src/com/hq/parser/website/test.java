@@ -103,8 +103,22 @@ public class test {
 		xunleikankanSpider.process();
 	}
 	
+	private static void weibo(){
+		ArrayList<String> urlList = new ArrayList<String>();
+		int k = 1;
+		String baseUrl = "http://club.weibo.cn/aj/getrank?type=2&page=";
+		for (int i = 1; i <=k; i++) {
+			urlList.add(baseUrl+i);
+		}
+		
+		ParserRule weiboRule = new WeiboParser();
+		Spider weiboSpider = new Spider("http://m.weibo.cn/u/1419207595", "d:/spider/weibo.txt", weiboRule, 1);
+		weiboSpider.process();
+	}
+	
 	public static void main(String[] args) throws ClientProtocolException, IOException {
-		tengXunShiPinComic();
+		weibo();
+		//tengXunShiPinComic();
 		//xunleikankanComic();
 		//douban();
 		//dmmhk();
