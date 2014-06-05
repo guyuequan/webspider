@@ -26,7 +26,7 @@ public class Parser {
 		this.inputString = inputString;
 	}
 	
-	public java.util.List<String> process(){
+	public java.util.List<String> process() throws Exception{
 		
 		switch (currentLevel) {
 			case 1:

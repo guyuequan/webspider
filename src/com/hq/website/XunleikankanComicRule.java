@@ -1,4 +1,4 @@
-package com.hq.parser.website;
+package com.hq.website;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class XunleikankanComicRule implements ParserRule{
 	@Override
 	public List<String> parser2(String contentString, String inputString) throws JSONException {
 		List<String> resultList = new ArrayList<String>();
-		String authorXpath = "//body//ul[@id='movie_info_ul']/li[@class='short_li'][2]/a";
+		String directorXpath = "//body//ul[@id='movie_info_ul']/li[@class='short_li'][2]/a";
 		String voiceActorsXpath = "//body//ul[@id='movie_info_ul']/li[3]";
 		String typesXpath = "//body//ul[@id='movie_info_ul']/li[5]";
 		String descriptionXpath = "//body//p[@id='movie_info_intro_l']";
@@ -68,19 +68,19 @@ public class XunleikankanComicRule implements ParserRule{
 		String playCountXpath = "//body//div[@class='movieinfo_tt']/span[@class='movieinfo_num']";
 		//get play count
 		String playCountString = new Xpath(contentString, playCountXpath).getFilterHtmlResult().trim().replaceAll(",", "");
-		int playCount = getNumber(playCountString, "播放:", "");
+		int playCount = getNumber(playCountString, "����:", "");
 		//get play num
 		int update_play_num = 0;//latest play num
 		int all_play_num = 0;//all play num
 		String play_num_string = new Xpath(contentString,playNumXpath).getFilterHtmlResult().trim();
-		update_play_num = getNumber(play_num_string, "更新至", "集");
-		all_play_num = getNumber(play_num_string, "共", "集");
+		update_play_num = getNumber(play_num_string, "������", "��");
+		all_play_num = getNumber(play_num_string, "��", "��");
 		if(all_play_num==0)
-			all_play_num = getNumber(play_num_string, "", "集全");
-		String stateString = "连载";
+			all_play_num = getNumber(play_num_string, "", "��ȫ");
+		String stateString = "����";
 		if(all_play_num!=0&&update_play_num==0){
-			//comic is over
-			stateString = "完结";
+			//˵���Ѿ����
+			stateString = "���";
 			update_play_num = all_play_num;
 		}
 		//get publish_time
@@ -90,10 +90,9 @@ public class XunleikankanComicRule implements ParserRule{
 			publish_time += "-01-01";
 		}
 		//get author
-		JSONArray authorArray = new JSONArray();
-		String author = new Xpath(contentString, authorXpath).getFilterHtmlResult();
-		authorArray.put(author);
-		System.out.println(author);
+	//	JSONArray directorArray = new JSONArray();
+		String director = new Xpath(contentString, directorXpath).getFilterHtmlResult();
+		//directorArray.put(director);
 		
 		//get voiceActors
 		String voiceActorsElements = new Xpath(contentString, voiceActorsXpath).getResult();
@@ -142,15 +141,13 @@ public class XunleikankanComicRule implements ParserRule{
 		//get time
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	String nowTime = df.format(new Date());
-		JSONArray spider_time = new JSONArray();
-		spider_time.put(nowTime);
-		System.out.println(strings[1]);
+		
 		try {
 			jsonObj.put("play", playJA);
 			jsonObj.put("source_url", play_source);
 			jsonObj.put("title", strings[1]);
 			jsonObj.put("img", imgJA);
-			jsonObj.put("author", authorArray);
+			jsonObj.put("director", director);
 			jsonObj.put("cast", castJSONArray);
 			jsonObj.put("category", categoryJSONArray);
 			jsonObj.put("description", description);
@@ -159,8 +156,8 @@ public class XunleikankanComicRule implements ParserRule{
 			jsonObj.put("state", stateString);
 			jsonObj.put("publish_time", publish_time);
 			jsonObj.put("play_count", playCount);
-			jsonObj.put("country", "日本");
-			jsonObj.put("timestramp", nowTime);
+			jsonObj.put("country", "�ձ�");
+			jsonObj.put("timestamp", nowTime);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

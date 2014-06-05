@@ -1,4 +1,4 @@
-package com.hq.spider;
+package com.hq.spider.core;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.hq.spider.downloader.downloadThread;
 import com.hq.spider.parser.ParserRule;
 import com.hq.spider.util.Filehandle;
 import com.hq.spider.util.SpiderConfig;
@@ -37,8 +36,6 @@ public class Levelspider implements Runnable{
 	private Filehandle filehandle = null;
 	
 	private String pathString = null;//output address
-	
-	private ExecutorService executorService;
 		
 	//constructor 1
 	public Levelspider(String urlString,ParserRule pRule,int currentLevel,int maxLevel,String pathString){
@@ -47,42 +44,38 @@ public class Levelspider implements Runnable{
 		this.currentLevel = currentLevel;
 		this.maxLevel = maxLevel;
 		this.pathString = pathString;
-		executorService = Executors.newFixedThreadPool(this.threadCount);
 	}
 	//constructor 2
 	public Levelspider(List<String>urlList,ParserRule pRule,int currentLevel,int maxLevel,String pathString){
-		for (String url : urlList) {
-			inputQueue.push(url);
+		for (String string : urlList) {
+			inputQueue.push(string);			
 		}
 		this.pathString = pathString;
 		this.pRule = pRule;
 		this.maxLevel = maxLevel;
 		this.currentLevel = currentLevel;
-		executorService = Executors.newFixedThreadPool(this.threadCount);
 	}
 	
 	@Override
 	public void run() {
 			/// start
-//			Executors.newFixedThreadPool(this.threadCount);
+			ExecutorService executorService = Executors.newFixedThreadPool(this.threadCount);
 			while(!inputQueue.isEmpty()){
-				downloadThread tmpDownloadThread  = new downloadThread(inputQueue.poll(), outputQueue, pRule, currentLevel);
+				Downloader tmpDownloadThread  = new Downloader(inputQueue.poll(), outputQueue, pRule, currentLevel);
 				executorService.execute(tmpDownloadThread);
 			}
 			
 			executorService.shutdown();
 			
 			if(this.currentLevel == maxLevel&&filehandle==null){
-				filehandle =  new Filehandle(pathString, outputQueue);
+				filehandle =  new Filehandle(this.pathString, outputQueue);
 				new Thread(filehandle).start();
 			}
 			
-			//loop judge: whether it is terminated 			
+			//loop judge: whether it is terminated 
 			try {
-				
 				while(!executorService.awaitTermination(100, TimeUnit.SECONDS)){
 					//do nothing
-					//Thread.sleep(100);
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

@@ -1,7 +1,8 @@
-package com.hq.spider;
+package com.hq.spider.core;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.hq.spider.parser.ParserRule;
 
 /**
@@ -44,14 +45,12 @@ public class Spider {
 	
 	public  void process(){
 		
-	//	SpiderConfig.init();
-		
 		//top level 
 		List<String> tmpList = new ArrayList<String>();
 		long startTime,endTime,wholeTime = 0;
 		startTime=System.currentTimeMillis();  
+		System.out.println("[INFO] level 1 start running");
 		if(enterUrl !=null){
-			System.out.println("[------current level:1--------]");
 			Levelspider topLevelspider = new Levelspider(enterUrl, pRule,1,levels,pathString);
 			topLevelspider.run();
 			tmpList = topLevelspider.getResult();
@@ -62,21 +61,24 @@ public class Spider {
 		}
 		endTime=System.currentTimeMillis(); 
 		wholeTime+= endTime-startTime;
-		System.out.println("[------level 1 cost:"+(endTime-startTime)+"ms---]");
+		System.out.println("[INFO] level 1 over,cost:"+(endTime-startTime)+"ms");
+		System.out.println("[INFO] level 1 size:"+tmpList.size());
 		//other levels
 		for (int i = 2; i <=levels; i++) {
 			startTime=System.currentTimeMillis();   
-			System.out.println("[------level:"+i+"-------]");
+			System.out.println("[INFO] level "+i+" start running");
 			Levelspider tmpLevelspider = new Levelspider(tmpList, pRule,i,levels,pathString);
 			tmpLevelspider.run();
 			tmpList.clear();
 			tmpList = tmpLevelspider.getResult();
 			endTime=System.currentTimeMillis(); 
 			wholeTime+= endTime-startTime;
-			System.out.println("[------level"+i+" cost:"+(endTime-startTime)+"ms---]");
+			System.out.println("[INFO] level "+i+" over, cost:"+(endTime-startTime)+"ms");
+			System.out.println("[INFO] level "+i+" size:"+tmpList.size());
 		}
 		resultList = tmpList;
-		System.out.println("[-----Spider over, cost:"+wholeTime/1000+"  s-----]");
+		System.out.println("[INFO] Spider over, cost:"+wholeTime/1000+"  s");
+		System.out.println("[INFO] Spider size: "+resultList.size());
 	}
 
 }

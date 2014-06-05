@@ -1,2 +1,12 @@
 eclipse.preferences.version=1
+encoding//src/com/hq/spider/core/Downloader.java=UTF-8
+encoding//src/com/hq/spider/core/Levelspider.java=UTF-8
+encoding//src/com/hq/spider/core/Spider.java=UTF-8
+encoding//src/com/hq/spider/util/Filehandle.java=UTF-8
+encoding//src/com/hq/spider/util/Httphandle.java=UTF-8
+encoding//src/com/hq/spider/util/SpiderConfig.java=UTF-8
+encoding//src/com/hq/website/SohuTVComicRule.java=UTF-8
+encoding//src/com/hq/website/TengXunShiPinComicRule.java=UTF-8
+encoding//src/com/hq/website/XunleikankanComicRule.java=UTF-8
+encoding//src/com/hq/website/test.java=UTF-8
 encoding/<project>=UTF-8

@@ -1,4 +1,4 @@
-package com.hq.spider.downloader;
+package com.hq.spider.core;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,32 +12,32 @@ import com.hq.spider.util.SpiderConfig;
 /**
  * @author huqian.hq
  */
-public class downloadThread implements Runnable{
+public class Downloader implements Runnable{
 	
-	//输入url
+	//input url
 	public String urlString;
 	
-	//休息时间
+	//sleep time
 	public int sleepTime =SpiderConfig.SLEEP_TIME; 
 	
-	//重连次数
+	//retry connect count
 	public int retryCount=SpiderConfig.RETRY_COUNT; 
 	
-	//当前层数
+	//current level
 	private int currentLevel;
 	
-	//输入解析器规则
+	//input parser rule
 	private ParserRule pRule;
 	
-	//输入
+	//input string
 	private String inputString ="";
 	
-	//输出结果队列
+	//output queue
 	private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<String>();
 	
 	//constructor1
 	/**
-	 * 复杂可配置版，构造函数
+	 * constructor complicated
 	 * @param inputString
 	 * @param sleepTime
 	 * @param retryCount
@@ -45,7 +45,7 @@ public class downloadThread implements Runnable{
 	 * @param pRule
 	 * @param currentLevel
 	 */
-	public downloadThread(String inputString,int sleepTime,int retryCount,
+	public Downloader(String inputString,int sleepTime,int retryCount,
 			ConcurrentLinkedQueue<String> queue,ParserRule pRule,int currentLevel) {
 		if(inputString.indexOf(SpiderConfig.SPLIT_STRING)>0)
 			this.urlString = inputString.split(SpiderConfig.SPLIT_STRING)[0];
@@ -59,14 +59,14 @@ public class downloadThread implements Runnable{
 		this.currentLevel = currentLevel;
 	}
 	/**
-	 * 简单版，构造函数
+	 * constructor simple
 	 * @param inputString  
 	 * @param outputQueue 
 	 * @param pRule  
 	 * @param currentLevel
 	 * 
 	 */
-	public downloadThread(String inputString,ConcurrentLinkedQueue<String> outputQueue,
+	public Downloader(String inputString,ConcurrentLinkedQueue<String> outputQueue,
 			ParserRule pRule,int currentLevel){
 		if(inputString.indexOf(SpiderConfig.SPLIT_STRING)>0){
 			this.urlString = inputString.split(SpiderConfig.SPLIT_STRING)[0];
@@ -85,9 +85,10 @@ public class downloadThread implements Runnable{
 	 * @throws IOException
 	 */
 	private String downloadHtml() throws ClientProtocolException, IOException{
-		//start downloader
+		//start html download
 		Httphandle httphandle = new Httphandle();
 		String contentString = httphandle.get(urlString);
+		httphandle.close();
 		return contentString;
 	}
 	
@@ -95,8 +96,7 @@ public class downloadThread implements Runnable{
 	public void run() {
 		
 		String contentString="";	
-		
-		//start the downloader
+		//start downloader
 		try {
 			contentString =downloadHtml();
 			
@@ -117,21 +117,24 @@ public class downloadThread implements Runnable{
 			}
 		}
 		//start the parser
-		String charsetString = getCharset(contentString);
-		System.out.println(charsetString);
-		String newString;
-		
+		String charsetString =SpiderConfig.DEFAULT_CHARSET;// getCharset(contentString).toUpperCase();		
 		try {
 			//encoding
-			newString = new String(contentString.getBytes("iso8859-1"),charsetString);
-			List<String> reusltList = (List<String>) new Parser(newString, pRule, currentLevel, inputString).process();
+			List<String> reusltList= null;
+			if(charsetString != SpiderConfig.DEFAULT_CHARSET){
+				String newString = new String(contentString.getBytes("iso8859-1"),charsetString);
+				reusltList = (List<String>) new Parser(newString, pRule, currentLevel, inputString).process();
+			}else {
+				reusltList = (List<String>) new Parser(contentString, pRule, currentLevel, inputString).process();
+			}
+			//add to the queue
 			for (String string : reusltList) {
 				queue.add(string);
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			System.err.println("[ERROR] parser,level"+this.currentLevel+" website:"+this.urlString);
-			//e1.printStackTrace();
+			e1.printStackTrace();
 		}
 		//sleep for the next downloader
 		try {
@@ -141,6 +144,7 @@ public class downloadThread implements Runnable{
 		}
 	}	
 	
+	@SuppressWarnings("unused")
 	private String getCharset(String contentString) {
 	   	 int t1 = contentString.indexOf("charset=");
 	   	 int k = t1;

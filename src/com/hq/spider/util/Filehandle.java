@@ -8,8 +8,6 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.apache.http.impl.conn.Wire;
-
 public class Filehandle implements Runnable {
 
 	
@@ -40,11 +38,9 @@ public class Filehandle implements Runnable {
 				e.printStackTrace();
 			}
 			while (isRunning) {
-				//System.out.println(isRunning);
 				
 				if (!queue.isEmpty()) {
 					try {
-					//	out.write((queue.poll()+"\n").getBytes());
 						writer.write(queue.poll()+"\n");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -52,8 +48,7 @@ public class Filehandle implements Runnable {
 					}
 				}
 				try {
-					Thread.sleep(100);
-					//Thread.sleep(100);
+					Thread.sleep(SpiderConfig.FILE_SLEEP_TIME);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -61,9 +56,7 @@ public class Filehandle implements Runnable {
 			}
 			//last
 			while(!queue.isEmpty()){
-				try {
-					//out.write((queue.poll()+"\n").getBytes());
-					
+				try {					
 					writer.write(queue.poll()+"\n");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
