@@ -8,7 +8,9 @@ webspider
 输入： 入口url + 层数+ 每层解析规则
 输出： 详情页所需要的结果
 
-
+结构
+=========
+ ![image](https://github.com/guyuequan/webspider/raw/master/assets/framework.JPG)
 
 使用说明
 ====================
