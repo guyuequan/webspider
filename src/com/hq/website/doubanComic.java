@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hq.spider.parser.ParserRule;
+import com.hq.spider.util.SpiderConfig;
 import com.hq.spider.util.Xpath;
 
 /**
@@ -23,7 +24,8 @@ import com.hq.spider.util.Xpath;
  *
  */
 public class doubanComic implements ParserRule {
-			
+	
+	private static int count = 0;
 	@Override
 	public List<String> parser1(String contentString,String urlString) {
 		List<String>  resultList = new ArrayList<String>();
@@ -58,7 +60,7 @@ public class doubanComic implements ParserRule {
 		//System.out.println(country);
 		String[] titles = myObject.getString("alt_title").split("/");
 		String title = titles[0].trim();
-		if(title == "")
+		if(title.equalsIgnoreCase(""))
 			title = myObject.getString("title");
 		JSONArray imgArr = new JSONArray();
 		JSONObject imgObject = new JSONObject();
@@ -133,6 +135,8 @@ public class doubanComic implements ParserRule {
 		jsonObj.put("timestamp", nowTime);
 		jsonObj.put("mode", mode);
 		resultList.add(jsonObj.toString());
+		System.out.println("[INFO] " + title + SpiderConfig.SPLIT_STRING+(++count));
+
 		return resultList;
 	}
 

@@ -24,7 +24,7 @@ webspider
 2  调用
 ----------------------
 
-具体参见  test.java下调用的例子,如抓取 tengxun/douban
+具体参见  test.java下调用的例子,如抓取 douban
 
 3 扩展
 -----------------------

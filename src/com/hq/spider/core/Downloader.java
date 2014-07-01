@@ -99,7 +99,7 @@ public class Downloader implements Runnable{
 		//start downloader
 		try {
 			contentString =downloadHtml();
-			
+			//System.out.println( new String(contentString.getBytes("iso8859-1"),"utf-8"));
 		} catch (Exception e) {// connection error: reconnect
 			e.printStackTrace();
 			try {
@@ -109,6 +109,7 @@ public class Downloader implements Runnable{
 			}
 			retryCount--;
 			if(retryCount>0){
+				System.out.println("[INFO] retry connect: leve "+currentLevel+"=>"+urlString);
 				run();
 			}
 			else {
@@ -117,16 +118,16 @@ public class Downloader implements Runnable{
 			}
 		}
 		//start the parser
-		String charsetString =SpiderConfig.DEFAULT_CHARSET;// getCharset(contentString).toUpperCase();		
+		//String charsetString =SpiderConfig.DEFAULT_CHARSET;// getCharset(contentString).toUpperCase();		
 		try {
 			//encoding
 			List<String> reusltList= null;
-			if(charsetString != SpiderConfig.DEFAULT_CHARSET){
+			/*if(charsetString != SpiderConfig.DEFAULT_CHARSET){
 				String newString = new String(contentString.getBytes("iso8859-1"),charsetString);
 				reusltList = (List<String>) new Parser(newString, pRule, currentLevel, inputString).process();
-			}else {
+			}else {*/
 				reusltList = (List<String>) new Parser(contentString, pRule, currentLevel, inputString).process();
-			}
+			//}
 			//add to the queue
 			for (String string : reusltList) {
 				queue.add(string);

@@ -141,6 +141,7 @@ public class TengXunShiPinComicRule implements ParserRule {
 		
 		
 		try {
+			title = title.trim();
 			jsonObj.put("play", playUrlJSONArray);
 			jsonObj.put("play_num", play_num);//
 			jsonObj.put("play_source", play_source);

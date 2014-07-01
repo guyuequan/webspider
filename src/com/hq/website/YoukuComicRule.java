@@ -12,6 +12,7 @@ import com.hq.spider.util.SpiderConfig;
 import com.hq.spider.util.Xpath;
 
 public class YoukuComicRule implements ParserRule {
+	private static int count = 0;
 
 	@Override
 	public List<String> parser1(String contentString, String inputString) {
@@ -27,26 +28,40 @@ public class YoukuComicRule implements ParserRule {
 	}
 
 	@Override
-	public List<String> parser2(String contentString, String inputString) {
-		List<String> resultList = new ArrayList<String>();
+	public List<String> parser2(String contentString, String inputString) throws JSONException {
+		// title
 		String titleXpath = "//body/div[@class='window']/div[@class='screen']/div[@class='s_body']/div[@class='s_main col2_21']/div[@id='title_wrap']/div[@id='title']/div[@class='base']/h1[@class='title']/span[@class='name']";
-		String modeXpath = "//body/div[@class='window']/div[@class='screen']/div[@class='s_body']/div[@class='s_main col2_21']/div[@id='title_wrap']/div[@id='title']/div[@class='base']/h1[@class='title']/span[@class='edition']";
-		String ratings_scoreXpath = "/html/body/div[@class='window']/div[@class='screen']/div[@class='s_body']/div[@class='s_main col2_21']/div[@class='left']/div[@id='showInfo_wrap']/div[@id='showInfo']/div[@class='showInfo poster_w']/ul[@class='baseinfo']/li[@class='row1 rate']/span[@class='rating_dp']/em[@class='num']";
-		String aliasXpath = "/html/body/div[@class='window']/div[@class='screen']/div[@class='s_body']/div[@class='s_main col2_21']/div[@class='left']/div[@id='showInfo_wrap']/div[@id='showInfo']/div[@class='showInfo poster_w']/ul[@class='baseinfo']/li[@class='row1 alias']";
-		String publish_timeXpath = "//body//span[@class='pub'][1]";
-		String categoryXpath = "//body//span[@class='type'][2]";
-		String imgUrlXpath = "//body//li[@class='thumb']/img/@src";
-		
-		//名字
 		String title = new Xpath(contentString, titleXpath).getFilterHtmlResult();
-		//版本：TV/剧场版等
+
+		// mode
+		String modeXpath = "//body/div[@class='window']/div[@class='screen']/div[@class='s_body']/div[@class='s_main col2_21']/div[@id='title_wrap']/div[@id='title']/div[@class='base']/h1[@class='title']/span[@class='edition']";
 		String mode = new Xpath(contentString, modeXpath).getFilterHtmlResult();
-		//评分
-		String ratings_score = new Xpath(contentString, ratings_scoreXpath).getFilterHtmlResult();
-		//别名
-		String alias = new Xpath(contentString, aliasXpath).getFilterHtmlResult();
-		if (alias != null) alias = alias.substring(5).trim();
-		//发布时间
+
+		// ratings_score
+//		String ratings_scoreXpath = "/html/body/div[@class='window']/div[@class='screen']/div[@class='s_body']/div[@class='s_main col2_21']/div[@class='left']/div[@id='showInfo_wrap']/div[@id='showInfo']/div[@class='showInfo poster_w']/ul[@class='baseinfo']/li[@class='row1 rate']/span[@class='rating_dp']/em[@class='num']";
+//		String ratings_score = new Xpath(contentString, ratings_scoreXpath).getFilterHtmlResult();
+		
+		// alias
+		JSONArray aliasJA = new JSONArray();
+		String aliasXpath = "/html/body/div[@class='window']/div[@class='screen']/div[@class='s_body']/div[@class='s_main col2_21']/div[@class='left']/div[@id='showInfo_wrap']/div[@id='showInfo']/div[@class='showInfo poster_w']/ul[@class='baseinfo']/li[@class='row1 alias']";
+		String aliasString = new Xpath(contentString, aliasXpath).getResult();
+		if (aliasString != null) {
+			int s = aliasString.indexOf("</label>") + "</label>".length();
+			int t = aliasString.indexOf("</li>", s);
+			aliasString = aliasString.substring(s,t).trim();
+			String[] aliasStrings = aliasString.split("/");
+			for (int i=0; i<aliasStrings.length; i++) {
+				String aliasStr = aliasStrings[i].trim();
+				if (aliasStr.length() > 0) {
+					JSONObject aliasJO = new JSONObject();
+					aliasJO.put("name", aliasStr);
+					aliasJA.put(aliasJO);
+				}
+			}
+		}
+
+		// publish_time
+		String publish_timeXpath = "//body//span[@class='pub'][1]";
 		String publish_time = new Xpath(contentString, publish_timeXpath).getFilterHtmlResult();
 		if(publish_time != null){
 			int i=0;
@@ -55,82 +70,138 @@ public class YoukuComicRule implements ParserRule {
 					break;
 			publish_time = publish_time.substring(i, publish_time.length());
 		}
-		//类型
-		JSONArray category = new JSONArray();
-		String[] categoryStrings = new Xpath(contentString, categoryXpath).getFilterHtmlResult().split(" ");
-		for(int j=0; j<categoryStrings.length; j++)
-			if((!categoryStrings[j].equals("")) && (!categoryStrings[j].equals("类型:")))
-				category.put(categoryStrings[j]);
-		//声优
-		JSONArray cast = new JSONArray();
-		int start = contentString.indexOf("<label>声优:</label>");
-		start = start + new String("<label>声优:</label>").length();
-		int end = contentString.indexOf("</span>", start);
-		String[] castStrings = contentString.substring(start, end).split("</a>");
-		for(String singleCast : castStrings){
-			int castNameStart = singleCast.length()-1;
-			while(castNameStart>=0 && singleCast.charAt(castNameStart) != '>'){
-				castNameStart -- ;
-			}
-			if(castNameStart > 0){
-				cast.put(singleCast.substring(castNameStart+1));
+
+		// category
+		JSONArray categoryJA = new JSONArray();
+		String categoryXpath = "//body//span[@class='type'][2]";
+		String categoryString = new Xpath(contentString, categoryXpath).getFilterHtmlResult();
+		if (categoryString != null) {
+			String[] categoryStrings = categoryString.split(" ");
+			for(int j=0; j<categoryStrings.length; j++) {
+				if((!categoryStrings[j].equals("")) && (!categoryStrings[j].equals("类型:"))) { //leixing
+					categoryJA.put(categoryStrings[j]);
+				}
 			}
 		}
-		//集数、�?�集�?
-		String play_count = null, play_num = null;
-		//状�?�：完结、连�?
+		
+		// cast
+		JSONArray castJA = new JSONArray();
+		int start, end = 0;
+		start = contentString.indexOf("<label>声优:</label>");
+		if (start != -1) {
+			start = start + new String("<label>声优:</label>").length();
+			end = contentString.indexOf("</span>", start);
+			String[] castStrings = contentString.substring(start, end).split("</a>");
+			for(String singleCast : castStrings){
+				int castNameStart = singleCast.length()-1;
+				while(castNameStart>=0 && singleCast.charAt(castNameStart) != '>'){
+					castNameStart -- ;
+				}
+				if(castNameStart > 0){
+					castJA.put(singleCast.substring(castNameStart+1));
+				}
+			}
+		}
+		
+		// state && play_num && all_play_num
+		int play_num = 0, all_play_num = 0;
 		String state = null;
 		start = 0; end = 0;
 		start = contentString.indexOf("<div class=\"basenotice\">");
 		start = start + new String("<div class=\"basenotice\">").length();
 		end = contentString.indexOf("<span", start);
-		String playStateString = contentString.substring(start, end);
-		String playState = "";
-		for(char c : playStateString.toCharArray()){
-			if('0'<=c && c<='9')
-				playState = playState + c;
+		if (start != -1 && end != -1) {
+			String playStateString = contentString.substring(start, end);
+			String playState = "";
+			for(char c : playStateString.toCharArray()){
+				if('0'<=c && c<='9')
+					playState = playState + c;
+			}
+			if (!playState.equals("")) {
+				if(playStateString.contains("共")){ //gong
+					state = "完结";
+					all_play_num = Integer.valueOf(playState);
+				}
+				else{
+					state = "连载";
+					play_num = Integer.valueOf(playState);
+				}
+			}
 		}
-		if(playStateString.contains("�?")){
-			state = "完结";
-			play_num = playState;
-		}
-		else{
-			state = "连载";
-			play_count = playState;
-		}
-		//播放链接
-		JSONArray play_url = new JSONArray();
-		play_url.put(inputString);
 		
-		//播放来源
-		JSONArray play_source = new JSONArray();
-		play_source.put("优酷");
+		// play
+		JSONArray playJA = new JSONArray();
+		JSONObject playJO = new JSONObject();
+		playJO.put("play_url", inputString);
+		playJO.put("play_count", play_num==0?all_play_num:play_num);
+		playJO.put("play_source", "youku");
+		playJA.put(playJO);
 		
-		//图片
-		JSONArray img_url = new JSONArray();
+		// source_url
+		JSONArray source_urlJA = new JSONArray();
+		source_urlJA.put(inputString);
+		
+		// img
+		JSONArray imgJA = new JSONArray();
+		String imgUrlXpath = "//body//li[@class='thumb']/img/@src";
 		String imgUrl = new Xpath(contentString, imgUrlXpath).getResult();
-		img_url.put(imgUrl);
+		JSONObject imgJO = new JSONObject();
+		imgJO.put("source_path", imgUrl);
+		imgJO.put("mode", "middle");
+		imgJA.put(imgJO);
 		
-		//�?终结果数�?
+		// country
+		String country = null;
+		String countryXpath = "//span[@class='area']/a";
+		country = new Xpath(contentString, countryXpath).getFilterHtmlResult();
+		
+		//play_count
+		long play_count = 0;
+		String play_countXpath = "//span[@class='play']";
+		String play_countString = new Xpath(contentString, play_countXpath).getFilterHtmlResult();
+		if (play_countString != null) {
+			play_countString = play_countString.replaceAll("总播放:", "").replaceAll(",", "").trim(); //zongbofang:
+			play_count = Long.valueOf(play_countString);
+		}
+		
+		//description
+		String description = null;
+		String descriptionXpath = "//div[@class='detail']/span/span[2]";
+		description = new Xpath(contentString, descriptionXpath).getFilterHtmlResult();
+		if (description == null) {
+			description = new Xpath(contentString, "//div[@class='detail']/span/span[1]").getFilterHtmlResult();
+			if (description == null) {
+				description = new Xpath(contentString, "//div[@class='detail']/span").getFilterHtmlResult();
+			}
+		}
+		if (description != null) {
+			description = description.trim();
+		}
+		
 		JSONObject jsonObj = new JSONObject(); 
 		try {
-			jsonObj.put("play_url", play_url);
-			jsonObj.put("play_source", play_source);
 			jsonObj.put("title", title);
 			jsonObj.put("mode", mode);
-			jsonObj.put("ratings_score", ratings_score);
-			jsonObj.put("alias", alias);
+			jsonObj.put("alias", aliasJA);
 			jsonObj.put("publish_time", publish_time);
-			jsonObj.put("category", category);
-			jsonObj.put("cast", cast);
+			jsonObj.put("category", categoryJA);
+			jsonObj.put("cast", castJA);
 			jsonObj.put("state", state);
-			if (play_num != null) jsonObj.put("play_num", play_num);
-			if (play_count != null) jsonObj.put("play_count", play_count);
-			jsonObj.put("img_url", img_url);
+			jsonObj.put("play_num", play_num);
+			jsonObj.put("all_play_num", all_play_num);
+			jsonObj.put("play", playJA);
+			jsonObj.put("source_url", source_urlJA);
+//			jsonObj.put("ratings_score", ratings_score);
+			jsonObj.put("img", imgJA);
+			jsonObj.put("country", country);
+			jsonObj.put("play_count", play_count);
+			jsonObj.put("description", description);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		
+		System.out.println("[INFO] " + title + SpiderConfig.SPLIT_STRING+(++count));
+		List<String> resultList = new ArrayList<String>();
 		resultList.add(jsonObj.toString());
 		return resultList;
 	}

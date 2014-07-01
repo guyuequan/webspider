@@ -88,7 +88,7 @@ public class Httphandle {
 	// set headers for httpPost
 	private void setHeaders(HttpPost httpPost,String hostString){
 		httpPost.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		httpPost.addHeader("Accept-Encoding", "gzip, deflate");		
+		//httpPost.addHeader("Accept-Encoding", "gzip, deflate");		
 		httpPost.addHeader("Accept-Language", "zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3");	
 		httpPost.addHeader("Cache-Control", "max-age=0");		
 		httpPost.addHeader("Connection", "keep-alive");	

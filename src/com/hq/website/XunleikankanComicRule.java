@@ -1,5 +1,6 @@
 package com.hq.website;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,22 +23,27 @@ import com.hq.spider.util.Xpath;
  */
 public class XunleikankanComicRule implements ParserRule{
 
+	private static int count = 0;
 	public int getNumber(String source,String start,String end){
-		java.util.regex.Pattern p = java.util.regex.Pattern.compile(start+"\\s*([0-9]{1,20})\\s*"+end);
-		if(source!=null){
-			Matcher m = p.matcher(source); 
-			if(m.find()){
-				return Integer.valueOf(m.group(1));
-			}
-		}	
+		try {
+			java.util.regex.Pattern p = java.util.regex.Pattern.compile(start+"\\s*([0-9]{1,20})\\s*"+end);
+			if(source!=null){
+				Matcher m = p.matcher(source); 
+				if(m.find()){
+					return Integer.valueOf(m.group(1));
+				}
+			}	
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		return 0;
-		
 	}
+	
+
 	@Override
-	public List<String> parser1(String contentString, String inputString) {
+	public List<String> parser1(String contentString, String inputString) throws UnsupportedEncodingException {
 		List<String>  resultList = new ArrayList<String>();
 		int itemsNum = 30;
-//		if(inputString.endsWith("page62/")) itemsNum = 17;
 		for (int i=1; i<=itemsNum; i++) {
 			String imgURLXpath = "//body//ul/li[" + i + "]/a/img/@_src";
 			String detailXpath = "//body//ul/li[" + i + "]/a/@href";
@@ -46,41 +52,61 @@ public class XunleikankanComicRule implements ParserRule{
 			String imgURL = new Xpath(contentString, imgURLXpath).getResult();
 			String detailUrl = new Xpath(contentString, detailXpath).getResult();
 			String title = new Xpath(contentString,titleXpath).getResult();
-			String result = detailUrl + SpiderConfig.SPLIT_STRING + 
-							title + SpiderConfig.SPLIT_STRING + 
-							imgURL;
-//			System.out.println(title);
-			resultList.add(result);			
+			if(title!=null){
+				String tmpString = title;
+				title = new String(tmpString.getBytes("iso8859-1"),"utf-8");
+				String result = detailUrl + SpiderConfig.SPLIT_STRING + 
+								title + SpiderConfig.SPLIT_STRING + 
+								imgURL;
+			//	System.out.println("[TITLE]"+title+inputString.split(SpiderConfig.SPLIT_STRING)[0]);
+				resultList.add(result);			
+			}else{
+				//System.out.println("[NULL]"+inputString.split(SpiderConfig.SPLIT_STRING)[0]);
+			}
 		}
 		
 		return resultList;
 	}
 
 	@Override
-	public List<String> parser2(String contentString, String inputString) throws JSONException {
+	public List<String> parser2(String contentString, String inputString) throws JSONException, UnsupportedEncodingException {
+		contentString = new String(contentString.getBytes("iso8859-1"),"gbk");
 		List<String> resultList = new ArrayList<String>();
 		String directorXpath = "//body//ul[@id='movie_info_ul']/li[@class='short_li'][2]/a";
 		String voiceActorsXpath = "//body//ul[@id='movie_info_ul']/li[3]";
 		String typesXpath = "//body//ul[@id='movie_info_ul']/li[5]";
 		String descriptionXpath = "//body//p[@id='movie_info_intro_l']";
 		String playNumXpath="//body//ul[@id='movie_info_ul']/li[@class='short_li'][1]/span";
+		String countryXpath = "//body//ul[@id='movie_info_ul']/li[4]";
 		String publishTimeXpath = "//body//div[@class='movieinfo_tt']/h2/span";
 		String playCountXpath = "//body//div[@class='movieinfo_tt']/span[@class='movieinfo_num']";
+		
+		//get country
+		String countryTmp = new Xpath(contentString,countryXpath).getFilterHtmlResult();
+		String country="日本";
+		if(countryTmp!=null){
+			if(countryTmp.contains("地区:")){
+				String tmp[] = countryTmp.trim().split(":");
+				if(tmp.length>1)
+					country = tmp[1];
+				//System.out.println(country);
+			}
+		}
+		
 		//get play count
 		String playCountString = new Xpath(contentString, playCountXpath).getFilterHtmlResult().trim().replaceAll(",", "");
-		int playCount = getNumber(playCountString, "����:", "");
+		int playCount = getNumber(playCountString, "播放:", "");
 		//get play num
 		int update_play_num = 0;//latest play num
 		int all_play_num = 0;//all play num
 		String play_num_string = new Xpath(contentString,playNumXpath).getFilterHtmlResult().trim();
-		update_play_num = getNumber(play_num_string, "������", "��");
-		all_play_num = getNumber(play_num_string, "��", "��");
+		update_play_num = getNumber(play_num_string, "更新至", "集");
+		all_play_num = getNumber(play_num_string, "共", "集");
 		if(all_play_num==0)
-			all_play_num = getNumber(play_num_string, "", "��ȫ");
-		String stateString = "����";
+			all_play_num = getNumber(play_num_string, "", "集全");
+		String stateString = "连载";
 		if(all_play_num!=0&&update_play_num==0){
-			//˵���Ѿ����
-			stateString = "���";
+			stateString = "完结";
 			update_play_num = all_play_num;
 		}
 		//get publish_time
@@ -134,14 +160,15 @@ public class XunleikankanComicRule implements ParserRule{
 		imgJA.put(iObject);
 		
 		JSONArray play_source = new JSONArray();
-		play_source.put("Ѹ�׿���");
+		play_source.put(inputString.split(SpiderConfig.SPLIT_STRING)[0]);
 		
 		JSONObject jsonObj = new JSONObject();
 		
 		//get time
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	String nowTime = df.format(new Date());
-		
+    	String title = strings[1].trim();
+    	
 		try {
 			jsonObj.put("play", playJA);
 			jsonObj.put("source_url", play_source);
@@ -156,12 +183,12 @@ public class XunleikankanComicRule implements ParserRule{
 			jsonObj.put("state", stateString);
 			jsonObj.put("publish_time", publish_time);
 			jsonObj.put("play_count", playCount);
-			jsonObj.put("country", "�ձ�");
+			jsonObj.put("country", country);
 			jsonObj.put("timestamp", nowTime);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		
+		System.out.println("[INFO] " + strings[1] + SpiderConfig.SPLIT_STRING+(++count));
 		resultList.add(jsonObj.toString());
 		return resultList;
 	}
